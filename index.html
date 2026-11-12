@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Todos! — a bubbly, playful todo list built with vanilla JavaScript and hand-written CSS."
+    />
+    <meta name="theme-color" content="#ff4fa3" />
+    <title>Todos! 🍬</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:ital,wght@0,400;0,700;0,800;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#todo-input">Skip to input</a>
+
+    <div class="blobs" aria-hidden="true">
+      <span class="blob blob--a"></span>
+      <span class="blob blob--b"></span>
+      <span class="blob blob--c"></span>
+    </div>
+
+    <main class="wrap">
+      <header class="hero">
+        <h1 class="hero__title">
+          <span class="hero__word">Todos!</span>
+          <span class="hero__bang" aria-hidden="true">🍭</span>
+        </h1>
+        <p class="hero__sub">
+          Get stuff done and feel <strong>obnoxiously</strong> good about it. Sprinkle, tick, repeat. ✨
+        </p>
+      </header>
+
+      <section class="card card--add" aria-labelledby="add-heading">
+        <h2 id="add-heading" class="sr-only">Add a todo</h2>
+
+        <form id="todo-form" class="add-form" autocomplete="off" novalidate>
+          <label for="todo-input" class="sr-only">New todo</label>
+          <input
+            id="todo-input"
+            name="todo"
+            type="text"
+            required
+            maxlength="200"
+            placeholder="What’s the mission? 🚀"
+            class="input"
+          />
+          <button type="submit" class="btn btn--add">
+            <span class="btn__label">Add it!</span>
+            <span aria-hidden="true">＋</span>
+          </button>
+        </form>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </section>
+
+      <section class="card card--list" aria-labelledby="list-heading">
+        <h2 id="list-heading" class="sr-only">Your todos</h2>
+
+        <div class="toolbar">
+          <div id="filters" class="filters" role="group" aria-label="Filter todos">
+            <button type="button" data-filter="all" class="chip" aria-pressed="true">All</button>
+            <button type="button" data-filter="active" class="chip" aria-pressed="false">Active</button>
+            <button type="button" data-filter="done" class="chip" aria-pressed="false">Done</button>
+          </div>
+
+          <p id="items-left" class="counter" aria-live="polite">0 items left</p>
+        </div>
+
+        <ul id="todo-list" class="todo-list" aria-live="polite"></ul>
+
+        <p id="empty-state" class="empty">
+          Nothing here yet. Add your first todo above. 🎈
+        </p>
+
+        <div class="card__footer">
+          <button id="clear-done" type="button" class="btn btn--ghost">Clear done 🧹</button>
+        </div>
+      </section>
+
+      <p class="footnote">Made with candy, courage &amp; localStorage. 💾</p>
+    </main>
+
+    <template id="todo-item-template">
+      <li class="todo-item" data-done="false">
+        <button
+          type="button"
+          class="todo-toggle todo-check"
+          aria-pressed="false"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" class="todo-check__icon" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 1 1 1.4-1.4l2.8 2.79 6.8-6.79a1 1 0 0 1 1.4 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <span class="todo-label"></span>
+
+        <span class="todo-emoji" aria-hidden="true"></span>
+
+        <button type="button" class="todo-delete" title="Delete">
+          <span aria-hidden="true">🗑️</span>
+          <span class="sr-only">Delete</span>
+        </button>
+      </li>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
