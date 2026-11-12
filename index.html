@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo</title>
+    <link rel="stylesheet" href="./dist/output.css" />
+  </head>
+  <body class="h-full bg-slate-100 text-slate-800">
+    <main class="mx-auto flex min-h-full max-w-lg flex-col px-4 py-10">
+      <h1 class="mb-1 text-3xl font-bold tracking-tight text-slate-900">Todo</h1>
+      <p class="mb-6 text-sm text-slate-500">
+        Tasks are saved in your browser&rsquo;s localStorage.
+      </p>
+
+      <form id="todo-form" class="mb-4 flex gap-2">
+        <input
+          id="todo-input"
+          type="text"
+          autocomplete="off"
+          placeholder="What needs doing?"
+          class="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+        />
+        <button
+          type="submit"
+          class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 active:bg-indigo-700"
+        >
+          Add
+        </button>
+      </form>
+
+      <div id="filters" class="mb-4 flex gap-1 rounded-lg bg-slate-200 p-1">
+        <button type="button" data-filter="all" class="filter-btn flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition">
+          All
+        </button>
+        <button type="button" data-filter="active" class="filter-btn flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition">
+          Active
+        </button>
+        <button type="button" data-filter="done" class="filter-btn flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition">
+          Done
+        </button>
+      </div>
+
+      <ul id="todo-list" class="mb-4 space-y-2"></ul>
+
+      <p id="empty-state" class="hidden rounded-lg border border-dashed border-slate-300 py-10 text-center text-sm text-slate-400">
+        Nothing here yet.
+      </p>
+
+      <footer class="mt-auto flex items-center justify-between pt-6 text-sm text-slate-500">
+        <span id="count">0 items left</span>
+        <button
+          id="clear-done"
+          type="button"
+          class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline"
+        >
+          Clear done
+        </button>
+      </footer>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
