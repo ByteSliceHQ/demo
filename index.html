@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Todo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+  <h1>Todo</h1>
+  <form id="add-form">
+    <label for="new-todo" class="sr-only">New task</label>
+    <input id="new-todo" type="text" placeholder="What needs to be done?" autocomplete="off" required>
+    <button type="submit">Add</button>
+  </form>
+  <div class="filters" role="group" aria-label="Filter tasks">
+    <button type="button" data-filter="all" aria-pressed="true">All</button>
+    <button type="button" data-filter="active" aria-pressed="false">Active</button>
+    <button type="button" data-filter="completed" aria-pressed="false">Completed</button>
+  </div>
+  <ul id="list"></ul>
+  <footer>
+    <span id="count" aria-live="polite"></span>
+    <button type="button" id="clear">Clear completed</button>
+  </footer>
+  <p class="hint">Double-click a task (or press the Edit button) to edit it.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
