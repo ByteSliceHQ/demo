@@ -1,0 +1,13 @@
+{
+  "name": "ts-check",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Small TypeScript spot-check: valid files must compile, invalid files must fail with known error codes.",
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json",
+    "check:invalid": "tsc --noEmit -p tsconfig.invalid.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
