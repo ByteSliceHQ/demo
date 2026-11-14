@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo</title>
+    <script>
+      // Apply the theme before first paint to avoid a flash of the wrong theme.
+      (function () {
+        var stored = null;
+        try {
+          // May throw when storage is blocked by the browser or a policy.
+          stored = window.localStorage.getItem("todo-theme");
+        } catch (e) {
+          stored = null;
+        }
+        var prefersDark = false;
+        try {
+          prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (e) {
+          prefersDark = false;
+        }
+        var dark = stored === "dark" || (stored !== "light" && prefersDark);
+        if (dark) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+    <main class="mx-auto flex min-h-screen max-w-lg items-start justify-center px-4 py-10">
+      <div
+        class="w-full rounded-2xl bg-white p-6 shadow-lg ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700"
+      >
+        <header class="mb-6 flex items-center justify-between gap-4">
+          <h1 class="text-2xl font-bold tracking-tight">Todo</h1>
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            aria-pressed="false"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+          >
+            <!-- moon: shown in light mode -->
+            <svg
+              class="h-5 w-5 dark:hidden"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <!-- sun: shown in dark mode -->
+            <svg
+              class="hidden h-5 w-5 dark:block"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+          </button>
+        </header>
+
+        <form id="todo-form" class="mb-5">
+          <label for="todo-input" class="sr-only">New todo</label>
+          <div class="flex gap-2">
+            <input
+              id="todo-input"
+              type="text"
+              maxlength="200"
+              autocomplete="off"
+              placeholder="What needs doing?"
+              class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            />
+            <button
+              type="submit"
+              class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              Add
+            </button>
+          </div>
+        </form>
+
+        <div
+          id="filters"
+          role="group"
+          aria-label="Filter todos"
+          class="mb-4 flex gap-2"
+        >
+          <button
+            type="button"
+            data-filter="all"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            data-filter="active"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            Active
+          </button>
+          <button
+            type="button"
+            data-filter="done"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            Done
+          </button>
+        </div>
+
+        <ul id="todo-list" class="space-y-2"></ul>
+
+        <p
+          id="empty-state"
+          aria-live="polite"
+          class="hidden rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500 dark:border-slate-600 dark:text-slate-400"
+        ></p>
+
+        <footer class="mt-6 flex items-center justify-between gap-4 border-t border-slate-200 pt-4 dark:border-slate-700">
+          <span
+            id="items-left"
+            aria-live="polite"
+            aria-atomic="true"
+            class="text-sm text-slate-600 dark:text-slate-300"
+          ></span>
+          <button
+            id="clear-completed"
+            type="button"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            Clear completed
+          </button>
+        </footer>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
