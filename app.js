@@ -3,13 +3,26 @@
 
   var STORAGE_ITEMS = "todo-items";
   var STORAGE_THEME = "todo-theme";
+  var STORAGE_ACCENT = "todo-accent";
   var MAX_LEN = 200;
   var FILTERS = ["all", "active", "done"];
+  var ACCENTS = [
+    { name: "slate", label: "Slate" },
+    { name: "emerald", label: "Emerald" },
+    { name: "violet", label: "Violet" },
+    { name: "rose", label: "Rose" },
+    { name: "amber", label: "Amber" },
+  ];
+  var DEFAULT_ACCENT = "slate";
+  var ACCENT_NAMES = ACCENTS.map(function (a) {
+    return a.name;
+  });
 
   var todos = [];
   var filter = "all";
   var focusPlan = null;
   var themeChoice = null; // "dark" | "light" | null (null = follow the system)
+  var accentChoice = DEFAULT_ACCENT;
 
   var form = document.getElementById("todo-form");
   var input = document.getElementById("todo-input");
@@ -18,6 +31,8 @@
   var itemsLeftEl = document.getElementById("items-left");
   var clearBtn = document.getElementById("clear-completed");
   var themeToggle = document.getElementById("theme-toggle");
+  var accentPicker = document.getElementById("accent-picker");
+  var accentButtons = [];
   var filterButtons = Array.prototype.slice.call(
     document.querySelectorAll("#filters [data-filter]")
   );
@@ -133,6 +148,80 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * Accent palette
+   * ------------------------------------------------------------------ */
+
+  function isValidAccent(name) {
+    return ACCENT_NAMES.indexOf(name) !== -1;
+  }
+
+  function readStoredAccent() {
+    var stored = safeGet(STORAGE_ACCENT);
+    return isValidAccent(stored) ? stored : DEFAULT_ACCENT;
+  }
+
+  // Keep the in-memory value in sync even when persistence is blocked, so the
+  // switcher keeps working for the current page lifetime (mirrors themeChoice).
+  function applyAccent(name) {
+    accentChoice = isValidAccent(name) ? name : DEFAULT_ACCENT;
+    document.documentElement.dataset.accent = accentChoice;
+    updateAccentButtons();
+  }
+
+  function setAccent(name) {
+    applyAccent(name);
+    safeSet(STORAGE_ACCENT, accentChoice);
+  }
+
+  function updateAccentButtons() {
+    for (var i = 0; i < accentButtons.length; i++) {
+      var btn = accentButtons[i];
+      btn.setAttribute(
+        "aria-pressed",
+        btn.dataset.accent === accentChoice ? "true" : "false"
+      );
+      btn.className = accentButtonClass(btn.dataset.accent === accentChoice);
+    }
+  }
+
+  function accentButtonClass(selected) {
+    return (
+      "flex h-6 w-6 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] " +
+      (selected
+        ? "ring-2 ring-slate-500 ring-offset-2 ring-offset-white dark:ring-slate-300 dark:ring-offset-slate-800"
+        : "ring-1 ring-slate-300 hover:ring-slate-400 dark:ring-slate-600 dark:hover:ring-slate-400")
+    );
+  }
+
+  function buildAccentPicker() {
+    if (!accentPicker) return;
+    for (var i = 0; i < ACCENTS.length; i++) {
+      (function (accent) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.accent = accent.name;
+        btn.setAttribute("aria-label", accent.label + " accent");
+        btn.setAttribute("aria-pressed", "false");
+        btn.className = accentButtonClass(false);
+
+        var dot = document.createElement("span");
+        dot.setAttribute("aria-hidden", "true");
+        dot.className = "block h-4 w-4 rounded-full";
+        // Use the CSS variable so the dot is brightened in dark mode too.
+        dot.style.backgroundColor = "var(--swatch-" + accent.name + ")";
+        btn.appendChild(dot);
+
+        btn.addEventListener("click", function () {
+          setAccent(accent.name);
+        });
+
+        accentPicker.appendChild(btn);
+        accentButtons.push(btn);
+      })(ACCENTS[i]);
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
    * Element factories
    * ------------------------------------------------------------------ */
 
@@ -145,7 +234,9 @@
     btn.dataset.id = todo.id;
     btn.dataset.action = "toggle";
     btn.className =
-      "flex h-6 w-6 shrink-0 items-center justify-center rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500";
+      // The offset keeps the accent ring separate from the accent-filled box in
+      // the checked state, while still reading against the row background.
+      "flex h-6 w-6 shrink-0 items-center justify-center rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900";
 
     var box = document.createElement("span");
     box.setAttribute("aria-hidden", "true");
@@ -153,7 +244,7 @@
     box.className =
       "flex h-5 w-5 items-center justify-center rounded border text-xs font-bold leading-none " +
       (todo.done
-        ? "border-indigo-600 bg-indigo-600 text-white dark:border-indigo-500 dark:bg-indigo-500"
+        ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-contrast)]"
         : "border-slate-500 bg-transparent text-transparent dark:border-slate-400");
 
     btn.appendChild(box);
@@ -194,7 +285,7 @@
     btn.dataset.action = "delete";
     btn.setAttribute("aria-label", 'Delete "' + todo.text + '"');
     btn.className =
-      "shrink-0 rounded p-1 text-slate-600 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 dark:text-slate-300 dark:hover:text-red-400";
+      "shrink-0 rounded p-1 text-slate-600 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 dark:text-slate-300 dark:hover:text-red-400";
     btn.appendChild(makeTrashIcon());
     return btn;
   }
@@ -371,11 +462,15 @@
       var active = btn.dataset.filter === filter;
       btn.setAttribute("aria-pressed", active ? "true" : "false");
       btn.className =
-        "rounded-lg px-3 py-1 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 " +
+        "rounded-lg px-3 py-1 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] " +
         (active
-          ? "bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+          ? "bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[var(--accent-hover)]"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700");
     }
+
+    // Accent swatches: keep aria-pressed/styling correct across renders. The
+    // swatch buttons themselves are not rebuilt, so focus is never stolen.
+    updateAccentButtons();
   }
 
   function renderAndFocus() {
@@ -503,7 +598,8 @@
   window.addEventListener("storage", function (e) {
     var isItems = e.key === null || e.key === STORAGE_ITEMS;
     var isTheme = e.key === null || e.key === STORAGE_THEME;
-    if (!isItems && !isTheme) return;
+    var isAccent = e.key === null || e.key === STORAGE_ACCENT;
+    if (!isItems && !isTheme && !isAccent) return;
     // Ignore writes from other storage areas (e.g. sessionStorage).
     if (e.storageArea) {
       var local = null;
@@ -524,6 +620,11 @@
     if (isTheme) {
       themeChoice = readStoredTheme();
       applyTheme(isDark());
+    }
+    if (isAccent) {
+      // Read-and-apply only: never write back, otherwise a delete/clear of
+      // todo-accent in another tab would be undone by this tab recreating it.
+      applyAccent(readStoredAccent());
     }
   });
 
@@ -549,5 +650,7 @@
   load();
   themeChoice = readStoredTheme();
   applyTheme(isDark());
+  buildAccentPicker();
+  applyAccent(readStoredAccent());
   render();
 })();

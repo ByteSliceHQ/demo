@@ -26,12 +26,111 @@
         } else {
           document.documentElement.classList.remove("dark");
         }
+
+        // Apply the accent palette before first paint too. Read the stored
+        // value in its own try/catch so blocked storage cannot break the theme
+        // application above.
+        var accent = "slate";
+        try {
+          var storedAccent = window.localStorage.getItem("todo-accent");
+          if (
+            storedAccent === "slate" ||
+            storedAccent === "emerald" ||
+            storedAccent === "violet" ||
+            storedAccent === "rose" ||
+            storedAccent === "amber"
+          ) {
+            accent = storedAccent;
+          }
+        } catch (e) {
+          accent = "slate";
+        }
+        document.documentElement.dataset.accent = accent;
       })();
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = { darkMode: "class" };
     </script>
+    <style>
+      /* Accent palette as CSS custom properties. Defaults (no data-accent or
+         data-accent="slate") are the neutral slate used by the rest of the app. */
+      :root {
+        --accent: #475569;
+        --accent-hover: #334155;
+        --accent-contrast: #ffffff;
+        --accent-ring: #475569;
+        /* Swatch dot colours (one per palette) for the picker. */
+        --swatch-slate: #475569;
+        --swatch-emerald: #047857;
+        --swatch-violet: #6d28d9;
+        --swatch-rose: #be123c;
+        --swatch-amber: #92400e;
+      }
+      html.dark {
+        --swatch-slate: #cbd5e1;
+        --swatch-emerald: #34d399;
+        --swatch-violet: #a78bfa;
+        --swatch-rose: #fb7185;
+        --swatch-amber: #fbbf24;
+      }
+      html[data-accent="emerald"] {
+        --accent: #047857;
+        --accent-hover: #065f46;
+        --accent-contrast: #ffffff;
+        --accent-ring: #047857;
+      }
+      html[data-accent="violet"] {
+        --accent: #6d28d9;
+        --accent-hover: #5b21b6;
+        --accent-contrast: #ffffff;
+        --accent-ring: #6d28d9;
+      }
+      html[data-accent="rose"] {
+        --accent: #be123c;
+        --accent-hover: #9f1239;
+        --accent-contrast: #ffffff;
+        --accent-ring: #be123c;
+      }
+      html[data-accent="amber"] {
+        --accent: #92400e;
+        --accent-hover: #78350f;
+        --accent-contrast: #ffffff;
+        --accent-ring: #92400e;
+      }
+      /* Dark-mode accents are lightened so they stay legible on slate-900 and
+         use a dark foreground for contrast (place after the palette blocks). */
+      html.dark {
+        --accent: #cbd5e1;
+        --accent-hover: #e2e8f0;
+        --accent-contrast: #0f172a;
+        --accent-ring: #cbd5e1;
+      }
+      html.dark[data-accent="emerald"] {
+        --accent: #34d399;
+        --accent-hover: #6ee7b7;
+        --accent-contrast: #052e16;
+        --accent-ring: #34d399;
+      }
+      html.dark[data-accent="violet"] {
+        --accent: #a78bfa;
+        --accent-hover: #c4b5fd;
+        --accent-contrast: #2e1065;
+        --accent-ring: #a78bfa;
+      }
+      html.dark[data-accent="rose"] {
+        --accent: #fb7185;
+        --accent-hover: #fda4af;
+        --accent-contrast: #4c0519;
+        --accent-ring: #fb7185;
+      }
+      html.dark[data-accent="amber"] {
+        --accent: #fbbf24;
+        --accent-hover: #fcd34d;
+        --accent-contrast: #451a03;
+        --accent-ring: #fbbf24;
+      }
+    </style>
   </head>
   <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <main class="mx-auto flex min-h-screen max-w-lg items-start justify-center px-4 py-10">
@@ -40,41 +139,49 @@
       >
         <header class="mb-6 flex items-center justify-between gap-4">
           <h1 class="text-2xl font-bold tracking-tight">Todo</h1>
-          <button
-            id="theme-toggle"
-            type="button"
-            aria-label="Toggle dark mode"
-            aria-pressed="false"
-            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
-          >
-            <!-- moon: shown in light mode -->
-            <svg
-              class="h-5 w-5 dark:hidden"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+          <div class="flex items-center gap-3">
+            <div
+              id="accent-picker"
+              role="group"
+              aria-label="Accent colour"
+              class="flex items-center gap-1"
+            ></div>
+            <button
+              id="theme-toggle"
+              type="button"
+              aria-label="Toggle dark mode"
+              aria-pressed="false"
+              class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
             >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-            <!-- sun: shown in dark mode -->
-            <svg
-              class="hidden h-5 w-5 dark:block"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-            </svg>
-          </button>
+              <!-- moon: shown in light mode -->
+              <svg
+                class="h-5 w-5 dark:hidden"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+              <!-- sun: shown in dark mode -->
+              <svg
+                class="hidden h-5 w-5 dark:block"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         <form id="todo-form" class="mb-5">
@@ -86,11 +193,11 @@
               maxlength="200"
               autocomplete="off"
               placeholder="What needs doing?"
-              class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+              class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             />
             <button
               type="submit"
-              class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              class="rounded-lg bg-[var(--accent)] px-4 py-2 font-medium text-[var(--accent-contrast)] hover:bg-[var(--accent-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
             >
               Add
             </button>
@@ -106,21 +213,21 @@
           <button
             type="button"
             data-filter="all"
-            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] dark:text-slate-300 dark:hover:bg-slate-700"
           >
             All
           </button>
           <button
             type="button"
             data-filter="active"
-            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Active
           </button>
           <button
             type="button"
             data-filter="done"
-            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-slate-300 dark:hover:bg-slate-700"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Done
           </button>
@@ -144,7 +251,7 @@
           <button
             id="clear-completed"
             type="button"
-            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
+            class="rounded-lg px-3 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Clear completed
           </button>
