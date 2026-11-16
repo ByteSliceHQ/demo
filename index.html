@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grocery List</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>🛒 Grocery List</h1>
+  <form id="add-form">
+    <input id="name" placeholder="Item name" required autocomplete="off">
+    <input id="qty" type="number" min="1" value="1" aria-label="Quantity">
+    <button type="submit">Add</button>
+  </form>
+  <ul id="list"></ul>
+  <footer>
+    <span id="summary"></span>
+    <button id="clear" type="button">Clear completed</button>
+  </footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
