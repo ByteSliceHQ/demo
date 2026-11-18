@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Only the few things plain utilities cannot express live down here. */
+@layer components {
+  /* Custom round checkbox: an appearance-none input with a CSS checkmark. */
+  .todo-check {
+    @apply relative inline-flex h-6 w-6 flex-none cursor-pointer appearance-none items-center justify-center rounded-full border-2 border-slate-300 bg-white transition-colors;
+    @apply hover:border-emerald-400;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2;
+    @apply dark:border-slate-600 dark:bg-slate-900 dark:focus-visible:ring-offset-slate-900;
+  }
+  .todo-check:checked {
+    @apply border-emerald-500 bg-emerald-500 dark:border-emerald-500 dark:bg-emerald-500;
+  }
+  .todo-check:checked::after {
+    content: "";
+    width: 0.3rem;
+    height: 0.6rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+}
+
+@layer utilities {
+  /* Accessible label that is available to assistive tech but not painted. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

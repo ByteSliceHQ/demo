@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Todo — Tailwind</title>
+  <link rel="stylesheet" href="dist/styles.css" />
+</head>
+<body class="min-h-screen bg-slate-100 px-4 py-10 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-100">
+  <main
+    class="mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+    aria-labelledby="app-title"
+  >
+    <header class="border-b border-slate-100 px-6 pb-5 pt-7 text-center dark:border-slate-800">
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white" id="app-title">todos</h1>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Stay focused. Get things done.</p>
+    </header>
+
+    <form class="border-b border-slate-100 p-4 dark:border-slate-800" id="composer" autocomplete="off">
+      <label class="visually-hidden" for="new-todo">Add a new todo</label>
+      <div class="flex items-stretch overflow-hidden rounded-lg border border-slate-200 bg-slate-50 focus-within:border-emerald-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/40 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:bg-slate-800">
+        <input
+          class="min-w-0 flex-1 rounded-none rounded-r-none border-0 bg-transparent px-3 py-2 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none dark:text-slate-100 dark:placeholder:text-slate-500"
+          id="new-todo"
+          name="new-todo"
+          type="text"
+          placeholder="What needs to be done?"
+          maxlength="200"
+        />
+        <button
+          class="flex-none rounded-none border-0 bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 disabled:opacity-50"
+          type="submit"
+        >
+          Add
+        </button>
+      </div>
+    </form>
+
+    <section class="border-b border-slate-100 px-4 py-3 dark:border-slate-800" aria-label="Filters">
+      <div class="inline-flex gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800" role="group" aria-label="Filter todos">
+        <button class="filter-btn rounded-md px-3 py-1 text-sm font-medium text-slate-600 transition-colors aria-pressed:bg-white aria-pressed:text-emerald-600 aria-pressed:shadow-sm dark:text-slate-300 dark:aria-pressed:bg-slate-700 dark:aria-pressed:text-emerald-400" type="button" aria-pressed="true" data-filter="all">All</button>
+        <button class="filter-btn rounded-md px-3 py-1 text-sm font-medium text-slate-600 transition-colors aria-pressed:bg-white aria-pressed:text-emerald-600 aria-pressed:shadow-sm dark:text-slate-300 dark:aria-pressed:bg-slate-700 dark:aria-pressed:text-emerald-400" type="button" aria-pressed="false" data-filter="active">Active</button>
+        <button class="filter-btn rounded-md px-3 py-1 text-sm font-medium text-slate-600 transition-colors aria-pressed:bg-white aria-pressed:text-emerald-600 aria-pressed:shadow-sm dark:text-slate-300 dark:aria-pressed:bg-slate-700 dark:aria-pressed:text-emerald-400" type="button" aria-pressed="false" data-filter="done">Done</button>
+      </div>
+    </section>
+
+    <ul class="list-none" id="todo-list"></ul>
+
+    <p class="px-6 py-8 text-center text-sm text-slate-400 dark:text-slate-500" id="empty-state" hidden>Nothing here yet. Add your first todo above.</p>
+
+    <footer class="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 text-sm dark:border-slate-800">
+      <span class="text-slate-500 dark:text-slate-400" id="items-left" aria-live="polite">0 items left</span>
+      <button
+        class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+        id="clear-done"
+        type="button"
+      >
+        Clear done
+      </button>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
