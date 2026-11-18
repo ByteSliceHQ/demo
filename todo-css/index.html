@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Todo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app" aria-labelledby="app-title">
+    <header class="app__header">
+      <h1 class="app__title" id="app-title">todos</h1>
+      <p class="app__subtitle">Stay focused. Get things done.</p>
+    </header>
+
+    <form class="composer" id="composer" autocomplete="off">
+      <label class="visually-hidden" for="new-todo">Add a new todo</label>
+      <input
+        class="composer__input"
+        id="new-todo"
+        name="new-todo"
+        type="text"
+        placeholder="What needs to be done?"
+        maxlength="200"
+      />
+      <button class="composer__submit" type="submit" aria-label="Add todo">Add</button>
+    </form>
+
+    <section class="toolbar" aria-label="Filters">
+      <div class="filters" role="group" aria-label="Filter todos">
+        <button class="filter is-active" type="button" aria-pressed="true" data-filter="all">All</button>
+        <button class="filter" type="button" aria-pressed="false" data-filter="active">Active</button>
+        <button class="filter" type="button" aria-pressed="false" data-filter="done">Done</button>
+      </div>
+    </section>
+
+    <ul class="todo-list" id="todo-list"></ul>
+
+    <p class="empty-state" id="empty-state" hidden>Nothing here yet. Add your first todo above.</p>
+
+    <footer class="app__footer">
+      <span class="count" id="items-left" aria-live="polite">0 items left</span>
+      <button class="clear-done" id="clear-done" type="button">Clear done</button>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
