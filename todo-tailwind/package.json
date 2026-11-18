@@ -1,0 +1,15 @@
+{
+  "name": "todo-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Todo app styled with Tailwind CSS (real build, no CDN).",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o dist/styles.css --minify",
+    "watch": "tailwindcss -i src/input.css -o dist/styles.css --watch",
+    "test": "node --check app.js && node tests/smoke.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.0",
+    "tailwindcss": "^3.4.19"
+  }
+}

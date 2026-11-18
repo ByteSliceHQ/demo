@@ -1,0 +1,5 @@
+node_modules/
+npm-debug.log*
+
+# NOTE: dist/styles.css is intentionally NOT ignored — it is committed so the
+# page works without running a build step.
